@@ -178,9 +178,9 @@ public:
 
 //Iterative Pre order traverse with stack
 void AVL::PreTraverse(){
-	
+
 	//Return if root is NULL, return
-	if(root = NULL) return;
+	if(root == NULL) return;
 
 	//Create stack
 	stack<Node*> nodeStack;
@@ -195,7 +195,6 @@ void AVL::PreTraverse(){
 		//Pop stack
 		nodeStack.pop();
 
-		//Print current key
 		cout << curr->Get_key();
 
 		//Push right on stack first so left children are processed first
@@ -240,8 +239,9 @@ Node* AVL::Search(int key){
 
 //Add
 Node* AVL::Add(Node* p){	
-	cout << "ADDED " << p->Get_key() << endl;
-	return NULL;
+	Node* addAddress = Search(p->Get_key());
+	addAddress = p;
+	return addAddress;
 }
 
 // This function intiailizes root = NULL.
@@ -273,7 +273,6 @@ int main()
 
 	while (cin >> key_temp) {
 
-		temp = new Node;
 		temp->Set_key(key_temp);
 
 		if (mode_avl == 0)
