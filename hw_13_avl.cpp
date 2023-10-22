@@ -30,6 +30,7 @@
 // 
 
 #include <iostream>
+#include <stack>
 using namespace std;
 
 class Node {
@@ -49,6 +50,37 @@ public:
 	Node* Get_parent();
 	Node();
 };
+
+void Node::Set_key(int x){
+	key = x;
+}
+int Node::Get_key(){
+	return key;
+}
+void Node::Set_left(Node* p){
+	p_left = p;
+}
+void Node::Set_right(Node* p){
+	p_right = p;
+}
+void Node::Set_parent(Node* p){
+	p_parent = p;
+}
+Node* Node::Get_left(){
+	return p_left;
+}
+Node* Node::Get_right(){
+	return p_right;
+}
+Node* Node::Get_parent(){
+	return p_parent;
+}
+Node::Node(){
+	key = 0;
+	p_left = NULL;
+	p_right = NULL;
+	p_parent = NULL;
+}
 
 class AVL {
 private:
@@ -144,6 +176,80 @@ public:
 	AVL();
 };
 
+//Iterative Pre order traverse with stack
+void AVL::PreTraverse(){
+	
+	//Return if root is NULL, return
+	if(root = NULL) return;
+
+	//Create stack
+	stack<Node*> nodeStack;
+	//Push root
+	nodeStack.push(root);
+
+	//While stack is not empty
+	while(!nodeStack.empty()){
+		
+		//Update current to top of stack
+		Node* curr = nodeStack.top();
+		//Pop stack
+		nodeStack.pop();
+
+		//Print current key
+		cout << curr->Get_key();
+
+		//Push right on stack first so left children are processed first
+		if(curr->Get_right() != NULL) nodeStack.push(curr->Get_right());
+		
+		if(curr->Get_left() != NULL) nodeStack.push(curr->Get_left());
+
+	}
+}
+
+//Get root
+Node* AVL::GetRoot(){
+	return root;
+}
+
+// Search
+Node* AVL::Search(int key){
+
+	//Pointer starts at the root
+	Node* curr = GetRoot();
+
+	//Run while the curr pointer is not NULL
+	while(curr != NULL){
+		
+		//Found key
+		if(curr->Get_key() == key){
+			return curr;
+			break;
+		}
+		//Search left subtree
+		else if(curr->Get_key() < key){
+			curr = curr->Get_left();
+		}
+		//Search right subtree
+		else if(curr->Get_key() > key){
+			curr = curr->Get_right();
+		}
+	}
+
+	return curr;
+}
+
+//Add
+Node* AVL::Add(Node* p){	
+	cout << "ADDED " << p->Get_key() << endl;
+	return NULL;
+}
+
+// This function intiailizes root = NULL.
+AVL::AVL(){
+	root = NULL;
+}
+
+
 
 // --------------
 // Main Function 
@@ -175,7 +281,7 @@ int main()
 			tree.Add(temp);
 		}
 		else if (mode_avl == 1) {
-			tree.Add_AVL(temp);
+			//tree.Add_AVL(temp);
 		}
 	}
 
@@ -185,31 +291,31 @@ int main()
 	}
 	// Mode 1: test "Add_AVL" function
 	else if (mode_test == 1) {
-		tree.PreTraverse();
+		//tree.PreTraverse();
 	}
 	// Mode 2: test "Search" function 
 	else if (mode_test == 2) {
-		temp = tree.Search(key_search);
+		//temp = tree.Search(key_search);
 		if (temp == NULL) {
-			cout << -1;
+			//cout << -1;
 		}
 		else {
-			cout << temp->Get_key();
+			//cout << temp->Get_key();
 		}		
 	}
 	// Mode 3: test "Remove" function 
 	else if (mode_test == 3) {
-		tree.Remove(key_search);
-		tree.PreTraverse();
+		//tree.Remove(key_search);
+		//tree.PreTraverse();
 	}
 	// Mode 4: test "Remove_AVL" function 
 	else if (mode_test == 4) {
-		tree.Remove_AVL(key_search);
-		tree.PreTraverse();
+		//tree.Remove_AVL(key_search);
+		//tree.PreTraverse();
 	}
 	// Mode 5: test "Height" function 
 	else if (mode_test == 5) {
-		cout << tree.Height(tree.GetRoot());
+		//cout << tree.Height(tree.GetRoot());
 	}
 
 
