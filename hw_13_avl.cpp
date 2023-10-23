@@ -201,7 +201,6 @@ void AVL::PreTraverse(){
 		if(curr->Get_right() != NULL) nodeStack.push(curr->Get_right());
 		
 		if(curr->Get_left() != NULL) nodeStack.push(curr->Get_left());
-
 	}
 }
 
@@ -234,14 +233,45 @@ Node* AVL::Search(int key){
 		}
 	}
 
-	return curr;
+	return NULL;
 }
 
 //Add
-Node* AVL::Add(Node* p){	
-	Node* addAddress = Search(p->Get_key());
-	addAddress = p;
-	return addAddress;
+Node* AVL::Add(Node* p){
+	
+	//If the tree is empty, set the new node as the root
+	if(root == NULL){
+		root = p;
+		return p;
+	}
+
+	Node* current = root;
+	Node* parent = NULL;
+
+	//Modified search alorithm, that keeps track of the current node and its parent
+	while(current != NULL){
+
+		cout << "I LOOP" << endl; 
+		
+		parent = current;
+
+		if(p->Get_key() < current->Get_key()){
+			current = current->Get_left();
+		}
+		else if(p->Get_key() > current->Get_key()){
+			current = current->Get_right();
+		}
+	}
+
+	//When current is NULL, parent is at the node we need to add p too
+	if(p->Get_key() < parent->Get_key()){
+		parent->Set_left(p);
+	}
+	else if (p->Get_key() > parent->Get_key()){
+		parent->Set_right(p);
+	}
+
+	return p;
 }
 
 // This function intiailizes root = NULL.
@@ -251,7 +281,7 @@ AVL::AVL(){
 
 
 
-// --------------
+// --------------1
 // Main Function 
 // --------------
 int main()
