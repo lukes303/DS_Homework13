@@ -76,7 +76,7 @@ Node* Node::Get_parent(){
 	return p_parent;
 }
 Node::Node(){
-	key = 0;
+	key = -1;
 	p_left = NULL;
 	p_right = NULL;
 	p_parent = NULL;
@@ -217,18 +217,18 @@ Node* AVL::Search(int key){
 
 	//Run while the curr pointer is not NULL
 	while(curr != NULL){
-		
+
 		//Found key
-		if(curr->Get_key() == key){
+		if(key == curr->Get_key()){
 			return curr;
 			break;
 		}
 		//Search left subtree
-		else if(curr->Get_key() < key){
+		else if(key < curr->Get_key()){
 			curr = curr->Get_left();
 		}
 		//Search right subtree
-		else if(curr->Get_key() > key){
+		else{
 			curr = curr->Get_right();
 		}
 	}
@@ -236,42 +236,52 @@ Node* AVL::Search(int key){
 	return NULL;
 }
 
-//Add
+// This function adds a new node at 
+// "p" to AVL without considering 
+// any violation of AVL property. 
+// (So just standard BST adding.)
+// It can return a proper address.
 Node* AVL::Add(Node* p){
+
+	int key = p->Get_key();
+
+	Node* nodeToAdd = new Node();
+	
+	nodeToAdd->Set_key(key);
 	
 	//If the tree is empty, set the new node as the root
 	if(root == NULL){
-		root = p;
-		return p;
+		root = nodeToAdd;
+		return nodeToAdd;
 	}
 
-	Node* current = root;
+	Node* curr = root;
 	Node* parent = NULL;
 
 	//Modified search alorithm, that keeps track of the current node and its parent
-	while(current != NULL){
+	while(curr != NULL){
 
-		cout << "I LOOP" << endl; 
-		
-		parent = current;
+		parent = curr;
 
-		if(p->Get_key() < current->Get_key()){
-			current = current->Get_left();
+		if(key < curr->Get_key()){
+			curr = curr->Get_left();
 		}
-		else if(p->Get_key() > current->Get_key()){
-			current = current->Get_right();
+		else{
+			curr = curr->Get_right();
 		}
 	}
 
 	//When current is NULL, parent is at the node we need to add p too
-	if(p->Get_key() < parent->Get_key()){
-		parent->Set_left(p);
+	nodeToAdd->Set_parent(parent);
+
+	if(key < parent->Get_key()){
+		parent->Set_left(nodeToAdd);
 	}
-	else if (p->Get_key() > parent->Get_key()){
-		parent->Set_right(p);
+	else{
+		parent->Set_right(nodeToAdd);
 	}
 
-	return p;
+	return nodeToAdd;
 }
 
 // This function intiailizes root = NULL.
@@ -314,6 +324,7 @@ int main()
 		}
 	}
 
+
 	// Mode 0: test "Add" function.
 	if (mode_test == 0) {
 		tree.PreTraverse();
@@ -324,12 +335,12 @@ int main()
 	}
 	// Mode 2: test "Search" function 
 	else if (mode_test == 2) {
-		//temp = tree.Search(key_search);
+		temp = tree.Search(key_search);
 		if (temp == NULL) {
-			//cout << -1;
+			cout << -1;
 		}
 		else {
-			//cout << temp->Get_key();
+			cout << temp->Get_key();
 		}		
 	}
 	// Mode 3: test "Remove" function 
