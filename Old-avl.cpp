@@ -30,7 +30,6 @@
 // 
 
 #include <iostream>
-#include <stack>
 using namespace std;
 
 class Node {
@@ -98,7 +97,7 @@ public:
 	// in HW10 (by slightly modifying it). 
 	// This function is only used to test 
 	// if your updated AVL/BST is correct. 
-	void PreTraverse();
+	void PreTraverse(Node* p);
 
 	// This function returns the root node. 
 	// Normally we don't need it. Here we 
@@ -176,31 +175,23 @@ public:
 	AVL();
 };
 
-//Iterative Pre order traverse with stack
-void AVL::PreTraverse(){
-
-	//Return if root is NULL, return
-	if(root == NULL) return;
-
-	//Create stack
-	stack<Node*> nodeStack;
-	//Push root
-	nodeStack.push(root);
-
-	//While stack is not empty
-	while(!nodeStack.empty()){
-		
-		//Update current to top of stack
-		Node* curr = nodeStack.top();
-		//Pop stack
-		nodeStack.pop();
-
-		cout << curr->Get_key();
-
-		//Push right on stack first so left children are processed first
-		if(curr->Get_right() != NULL) nodeStack.push(curr->Get_right());
-		
-		if(curr->Get_left() != NULL) nodeStack.push(curr->Get_left());
+// This function implements pre-order 
+// traverse, starting from the root, 
+// and prints the traveres sequence 
+// (with no space between nodes). 
+// You can use the function you implemented 
+// in HW10 (by slightly modifying it). 
+// This function is only used to test 
+// if your updated AVL/BST is correct. 
+void AVL::PreTraverse(Node* p){
+	
+	//Base Case
+	if(p == NULL) return;
+	//Recursive case
+	else{
+		cout << p->Get_key();
+		PreTraverse(p->Get_left());
+		PreTraverse(p->Get_right());
 	}
 }
 
@@ -284,6 +275,34 @@ Node* AVL::Add(Node* p){
 	return nodeToAdd;
 }
 
+// Function to find the minimum
+// valued node in a BST
+Node * minValueNode(Node* node)
+{
+    Node* current = node;
+
+    /* loop down to find the leftmost leaf */
+    while (current->Get_left() != NULL){
+		current = current->Get_left();
+	} 
+
+    return current;
+}
+
+// This function removes a node with 
+// "key" from AVL without considering 
+// any violation of AVL property. 
+// (So just standard BST removal.) 
+// For simplicty, to fill holes, let 
+// us only use the recursive algorithm 
+// that looks for the max/min node in 
+// the left/right subtress of the hole. 
+// It can return a proper address.
+Node* AVL::Remove(int key){
+
+}
+
+
 // This function intiailizes root = NULL.
 AVL::AVL(){
 	root = NULL;
@@ -327,7 +346,7 @@ int main()
 
 	// Mode 0: test "Add" function.
 	if (mode_test == 0) {
-		tree.PreTraverse();
+		tree.PreTraverse(tree.GetRoot());
 	}
 	// Mode 1: test "Add_AVL" function
 	else if (mode_test == 1) {
@@ -345,8 +364,8 @@ int main()
 	}
 	// Mode 3: test "Remove" function 
 	else if (mode_test == 3) {
-		//tree.Remove(key_search);
-		//tree.PreTraverse();
+		tree.Remove(key_search);
+		tree.PreTraverse(tree.GetRoot());
 	}
 	// Mode 4: test "Remove_AVL" function 
 	else if (mode_test == 4) {
