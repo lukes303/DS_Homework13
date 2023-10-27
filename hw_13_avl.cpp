@@ -151,6 +151,9 @@ public:
 	// the AVL property.
 	void Remove_AVL(int key);
 
+	//Height plus 1
+	int HeightPlusOne(Node* p);
+
 	// This function returns height 
 	// of a subtree rooted at "p". 
 	int Height(Node* p);
@@ -276,15 +279,7 @@ Node* AVL::Add(Node* p){
 	return nodeToAdd;
 }
 
-// This function removes a node with 
-// "key" from AVL without considering 
-// any violation of AVL property. 
-// (So just standard BST removal.) 
-// For simplicty, to fill holes, let 
-// us only use the recursive algorithm 
-// that looks for the max/min node in 
-// the left/right subtress of the hole. 
-// It can return a proper address.
+//Remove
 Node* AVL::Remove(int key){
 	return RemoveRecursive(key, GetRoot());
 }
@@ -351,10 +346,26 @@ void AVL::Add_AVL(Node* p){
 
 }
 
-// This function returns height 
-// of a subtree rooted at "p". 
-int AVL::Height(Node* p){
-	
+//Returns the height plus one recursivly
+int HeightPlusOne(Node* root){
+	//Base Case
+	if (root == nullptr) {
+        return 0; // An empty tree has a height of 0.
+    }
+	//Recursive call for left
+    int leftHeight = HeightPlusOne(root->Get_left());
+	//Recursive call for right
+    int rightHeight = HeightPlusOne(root->Get_right());
+
+    // Return leftHeight plus 1 if its bigger, rightHeight + 1 if it is not
+    if (leftHeight > rightHeight) return 1 + leftHeight;
+ 	else return 1 + rightHeight;
+}
+
+//Calls height plus one, decrements value, returns result
+int Height(Node* root) {
+	int height = HeightPlusOne(root);
+	return --height;
 }
 
 //Constructor
