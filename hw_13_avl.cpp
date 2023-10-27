@@ -338,6 +338,25 @@ Node* AVL::getReplacement(Node* curr){
     return curr;
 }
 
+// This function adds a new node 
+// stored at "p" to AVL and performs 
+// necessary rotations to restore 
+// the AVL property.
+void AVL::Add_AVL(Node* p){
+	
+	//First add node ignoring BST properties
+	Add(p);
+
+
+
+}
+
+// This function returns height 
+// of a subtree rooted at "p". 
+int AVL::Height(Node* p){
+	
+}
+
 //Constructor
 AVL::AVL(){
 	root = NULL;
