@@ -50,6 +50,37 @@ public:
 	Node();
 };
 
+void Node::Set_key(int x){
+	key = x;
+}
+int Node::Get_key(){
+	return key;
+}
+void Node::Set_left(Node* p){
+	p_left = p;
+}
+void Node::Set_right(Node* p){
+	p_right = p;
+}
+void Node::Set_parent(Node* p){
+	p_parent = p;
+}
+Node* Node::Get_left(){
+	return p_left;
+}
+Node* Node::Get_right(){
+	return p_right;
+}
+Node* Node::Get_parent(){
+	return p_parent;
+}
+Node::Node(){
+	key = -1;
+	p_left = NULL;
+	p_right = NULL;
+	p_parent = NULL;
+}
+
 class AVL {
 private:
 	
@@ -67,6 +98,9 @@ public:
 	// This function is only used to test 
 	// if your updated AVL/BST is correct. 
 	void PreTraverse();
+
+	//Helper function for PreTraverse
+	void RecursivePreTraverse(Node* root);
 
 	// This function returns the root node. 
 	// Normally we don't need it. Here we 
@@ -98,6 +132,12 @@ public:
 	// the left/right subtress of the hole. 
 	// It can return a proper address.
 	Node* Remove(int key);
+
+	//Recursive remove function
+	Node* RemoveRecursive(int key, Node* p);
+
+	//Recursive get replacement function
+	Node* getReplacement(Node* curr);
 
 	// This function adds a new node 
 	// stored at "p" to AVL and performs 
@@ -144,6 +184,164 @@ public:
 	AVL();
 };
 
+//PreTraverse: Calls RecursivePreTraverse function with the root of the tree
+void AVL::PreTraverse(){
+	RecursivePreTraverse(GetRoot());
+}
+
+//Helper function for PreTraverse, actually does the traversing
+void AVL::RecursivePreTraverse(Node* p){
+
+	//Base Case
+	if(p == NULL) return;
+	//Recursive case
+	else{
+		cout << p->Get_key();
+		RecursivePreTraverse(p->Get_left());
+		RecursivePreTraverse(p->Get_right());
+	}
+}
+
+//Getroot
+Node* AVL::GetRoot(){
+	return root;
+}
+
+//Search
+Node* AVL::Search(int key){
+	//Pointer starts at the root
+	Node* curr = GetRoot();
+
+	//Run while the curr pointer is not NULL
+	while(curr != NULL){
+
+		//Found key
+		if(key == curr->Get_key()){
+			return curr;
+			break;
+		}
+		//Search left subtree
+		else if(key < curr->Get_key()){
+			curr = curr->Get_left();
+		}
+		//Search right subtree
+		else{
+			curr = curr->Get_right();
+		}
+	}
+
+	return NULL;
+}
+
+//Add
+Node* AVL::Add(Node* p){
+	int key = p->Get_key();
+
+	Node* nodeToAdd = new Node();
+	
+	nodeToAdd->Set_key(key);
+	
+	//If the tree is empty, set the new node as the root
+	if(root == NULL){
+		root = nodeToAdd;
+		return nodeToAdd;
+	}
+
+	Node* curr = root;
+	Node* parent = NULL;
+
+	//Modified search alorithm, that keeps track of the current node and its parent
+	while(curr != NULL){
+
+		parent = curr;
+
+		if(key < curr->Get_key()){
+			curr = curr->Get_left();
+		}
+		else{
+			curr = curr->Get_right();
+		}
+	}
+
+	//When current is NULL, parent is at the node we need to add p too
+	nodeToAdd->Set_parent(parent);
+
+	if(key < parent->Get_key()){
+		parent->Set_left(nodeToAdd);
+	}
+	else{
+		parent->Set_right(nodeToAdd);
+	}
+
+	return nodeToAdd;
+}
+
+// This function removes a node with 
+// "key" from AVL without considering 
+// any violation of AVL property. 
+// (So just standard BST removal.) 
+// For simplicty, to fill holes, let 
+// us only use the recursive algorithm 
+// that looks for the max/min node in 
+// the left/right subtress of the hole. 
+// It can return a proper address.
+Node* AVL::Remove(int key){
+	return RemoveRecursive(key, GetRoot());
+}
+
+//Recursive remove function
+Node* AVL::RemoveRecursive(int key, Node* p){
+
+	//Base Case
+	if(p == NULL){
+		return p;
+	}
+	
+	//Recursive Cases
+	//Search left subtree if key is less than p->Getkey()
+	if(key < p->Get_key()){
+		p->Set_left(RemoveRecursive(key, p->Get_left()));
+	}
+	//Search right subtree if key is greater than p->Getkey()
+	else if(key > p->Get_key()){
+		p->Set_right(RemoveRecursive(key, p->Get_right()));
+	}
+	else{
+		//If left child is NULL
+		if(p->Get_left() == NULL){
+			Node* temp = p->Get_right();
+			delete p;
+			return temp;
+		}
+		//If right child is NULL
+		else if(p->Get_right() == NULL){
+			Node* temp = p->Get_left();
+			delete p;
+			return temp;
+		}
+		//Get replacement
+		else{
+			Node* replacement = getReplacement(p);
+			p->Set_key(replacement->Get_key());
+			p->Set_right(RemoveRecursive(key, p->Get_right()));
+		}
+	}
+
+	return p;
+}
+
+//Recursive get replacement function
+Node* AVL::getReplacement(Node* curr){
+	curr = curr->Get_right();
+    while(curr != NULL && curr->Get_left() != NULL)
+        curr = curr->Get_left();
+    return curr;
+}
+
+//Constructor
+AVL::AVL(){
+	root = NULL;
+}
 
 // --------------
 // Main Function 
@@ -175,7 +373,7 @@ int main()
 			tree.Add(temp);
 		}
 		else if (mode_avl == 1) {
-			tree.Add_AVL(temp);
+			//tree.Add_AVL(temp);
 		}
 	}
 
@@ -185,7 +383,7 @@ int main()
 	}
 	// Mode 1: test "Add_AVL" function
 	else if (mode_test == 1) {
-		tree.PreTraverse();
+		//tree.PreTraverse();
 	}
 	// Mode 2: test "Search" function 
 	else if (mode_test == 2) {
@@ -204,12 +402,12 @@ int main()
 	}
 	// Mode 4: test "Remove_AVL" function 
 	else if (mode_test == 4) {
-		tree.Remove_AVL(key_search);
-		tree.PreTraverse();
+		//tree.Remove_AVL(key_search);
+		//tree.PreTraverse();
 	}
 	// Mode 5: test "Height" function 
 	else if (mode_test == 5) {
-		cout << tree.Height(tree.GetRoot());
+		//cout << tree.Height(tree.GetRoot());
 	}
 
 
