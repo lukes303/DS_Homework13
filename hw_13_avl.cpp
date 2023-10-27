@@ -151,12 +151,15 @@ public:
 	// the AVL property.
 	void Remove_AVL(int key);
 
-	//Height plus 1
+	//Height plus 1 called by
 	int HeightPlusOne(Node* p);
 
 	// This function returns height 
 	// of a subtree rooted at "p". 
 	int Height(Node* p);
+
+	//This function gets the depth of a node
+	int Depth(Node* p);
 
 	// This function performs clock-wise
 	// rotation at node "p". It only does
@@ -342,12 +345,10 @@ void AVL::Add_AVL(Node* p){
 	//First add node ignoring BST properties
 	Add(p);
 
-
-
 }
 
 //Returns the height plus one recursivly
-int HeightPlusOne(Node* root){
+int AVL::HeightPlusOne(Node* root){
 	//Base Case
 	if (root == nullptr) {
         return 0; // An empty tree has a height of 0.
@@ -363,9 +364,23 @@ int HeightPlusOne(Node* root){
 }
 
 //Calls height plus one, decrements value, returns result
-int Height(Node* root) {
+int AVL::Height(Node* root) {
 	int height = HeightPlusOne(root);
 	return --height;
+}
+
+//Depth
+int AVL::Depth(Node* p){
+
+	Node* curr = p;
+	int depth = 0;
+
+	while(curr != NULL){
+		depth++;
+		curr = curr->Get_parent();
+	}
+
+	return depth;
 }
 
 //Constructor
