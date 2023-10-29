@@ -30,7 +30,9 @@
 // 
 
 #include <iostream>
+#include <cstdlib>
 using namespace std;
+
 
 class Node {
 private:
@@ -185,6 +187,9 @@ public:
 	// - "LR" if it is left-right violation
 	// - "RL" if it is right-left violation
 	string CheckViolation(Node* p);
+
+	//Balance helper function
+	int Balance(Node* p);
 
 	// This function intiailizes root = NULL.
 	AVL();
@@ -343,7 +348,49 @@ Node* AVL::getReplacement(Node* curr){
 void AVL::Add_AVL(Node* p){
 	
 	//First add node ignoring BST properties
-	Add(p);
+	Node* curr = Add(p);
+
+	//Check every node on path from curr to root for violation. Handle violations if they exist
+	while(curr != NULL){
+		string violationMSG = CheckViolation(curr);
+
+		//Left-Left
+		if(violationMSG == "LL"){
+			cout << "LL" << endl;
+			curr = Rotate_cw(curr);
+		}
+		//Right-Right
+		else if(violationMSG == "RR"){
+			//cout << "RR" << endl;
+		}
+		//Left-Right
+		else if(violationMSG == "LR"){
+			//cout << "LR" << endl;
+		}
+		//Right-Left
+		else if(violationMSG == "RL"){
+			//cout << "RL" << endl;
+		}
+		else if(violationMSG == "NO"){
+			cout << "NO" << endl;
+			curr = curr->Get_parent();
+		}
+		//curr = curr->Get_parent();
+	}
+
+}
+// - "NO" if no violation 
+// - "LL" if it is left-left violation 
+// - "RR" if it is right-right violation
+// - "LR" if it is left-right violation
+// - "RL" if it is right-left violation
+
+
+// This function removes a node 
+// with "key" from AVL and performs 
+// necessary rotations to restore 
+// the AVL property.
+void AVL::Remove_AVL(int key){
 
 }
 
@@ -383,6 +430,117 @@ int AVL::Depth(Node* p){
 	return depth;
 }
 
+// This function performs clock-wise
+// rotation at node "p". It only does
+// rotation and does not consider 
+// the type of violation scenario.
+// It can return a proper address.
+Node* AVL::Rotate_cw(Node* p){
+
+	Node* B = p->Get_left();
+	Node* E = B->Get_right();
+
+	//If node being rotated is the root, update root
+	if(p->Get_key() == root->Get_key()){
+		B->Set_parent(NULL);
+		root = B;
+	}
+
+	//If B has a right child, make it p's left child
+	if(E != NULL){
+		p->Set_left(E);
+		E->Set_parent(p);
+	}
+	//If B has no right child, set p's left to NULL
+	else{
+		p->Set_left(NULL);
+	}
+
+	B->Set_right(p);
+	p->Set_parent(B);
+
+	return B;
+}
+
+// This function performs counter 
+// clock-wise rotation at node "p". 
+// It only does rotation and does 
+// not consider the type of violation 
+// scenario. It can return a proper address.
+Node* AVL::Rotate_cc(Node* p){
+	return NULL;
+}
+
+// This function checks if there 
+// is a violation at a node p, and 
+// return the violation scenario. 
+// It returns a string of 
+// - "NO" if no violation 
+// - "LL" if it is left-left violation 
+// - "RR" if it is right-right violation
+// - "LR" if it is left-right violation
+// - "RL" if it is right-left violation
+string AVL::CheckViolation(Node* p){
+	
+	//Get the balance of p with helper function
+	int pBalance = Balance(p);
+
+	int pLeftBal, pRightBal;
+
+	//Get the balance of p's left child
+	if(p->Get_left() != NULL){
+		pLeftBal = Balance(p->Get_left());
+	}
+	else{
+		pLeftBal = 0;
+	}
+
+	//Get the balance of p's right child
+	if(p->Get_right() != NULL){
+		pRightBal = Balance(p->Get_right());
+	}
+	else{
+		pRightBal = 0;
+	}
+	
+	//If there is a violation, determine case
+
+	//Left-Left
+	if(pBalance > 1 && pLeftBal >= 0){
+		return "LL";
+	}
+	//Right-Right
+	else if(pBalance < -1 && pRightBal <= 0){
+		return "RR";
+	}
+	//Left-Right
+	else if(pBalance > 1 && pLeftBal < 0){
+		return "LR";
+	}
+	else if(pBalance < -1 && pRightBal > 0){
+		return "RL";
+	}
+	else{
+		return "NO";
+	}
+}
+
+//Balance helper function
+int AVL::Balance(Node* p){
+	
+	int leftHeight, rightHeight;
+
+	//Get height of left subtree
+	leftHeight = Height(p->Get_left());
+
+	//Get height of right sub tree
+	rightHeight = Height(p->Get_right());
+
+	int balance = leftHeight - rightHeight;
+
+	return balance;
+}
+
 //Constructor
 AVL::AVL(){
 	root = NULL;
@@ -418,7 +576,7 @@ int main()
 			tree.Add(temp);
 		}
 		else if (mode_avl == 1) {
-			//tree.Add_AVL(temp);
+			tree.Add_AVL(temp);
 		}
 	}
 
@@ -428,7 +586,7 @@ int main()
 	}
 	// Mode 1: test "Add_AVL" function
 	else if (mode_test == 1) {
-		//tree.PreTraverse();
+		tree.PreTraverse();
 	}
 	// Mode 2: test "Search" function 
 	else if (mode_test == 2) {
@@ -452,7 +610,11 @@ int main()
 	}
 	// Mode 5: test "Height" function 
 	else if (mode_test == 5) {
-		//cout << tree.Height(tree.GetRoot());
+		cout << tree.Height(tree.GetRoot());
+	}
+	//Mode 6: PERSONAL TESTS
+	else if (mode_test == 6){
+
 	}
 
 
