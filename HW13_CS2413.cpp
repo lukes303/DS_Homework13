@@ -163,9 +163,6 @@ public:
 	//This function gets the depth of a node
 	int Depth(Node* p);
 
-	//Helper function for rotate functions
-	string RotateHelper(Node* psParent, int psKey);
-
 	// This function performs clock-wise
 	// rotation at node "p". It only does
 	// rotation and does not consider 
@@ -359,28 +356,23 @@ void AVL::Add_AVL(Node* p){
 
 		//Left-Left
 		if(violationMSG == "LL"){
-			cout << "LL" << endl;
 			curr = Rotate_cw(curr);
 		}
 		//Right-Right
 		else if(violationMSG == "RR"){
-			cout << "RR" << endl;
 			curr = Rotate_cc(curr);
 		}
 		//Left-Right
 		else if(violationMSG == "LR"){
-			cout << "LR" << endl;
 			Rotate_cc(curr->Get_left());
 			curr = Rotate_cw(curr);
 		}
 		//Right-Left
 		else if(violationMSG == "RL"){
-			cout << "RL" << endl;
 			Rotate_cw(curr->Get_right());
 			curr = Rotate_cc(curr);
 		}
 		else if(violationMSG == "NO"){
-			//cout << "NO" << endl;
 			curr = curr->Get_parent();
 		}
 	}
@@ -398,6 +390,36 @@ void AVL::Add_AVL(Node* p){
 // necessary rotations to restore 
 // the AVL property.
 void AVL::Remove_AVL(int key){
+
+	//Standard BST removal
+	Node* curr = Remove(key);
+
+	//Check every node on path from curr to root for violation. Handle violations if they exist
+	while(curr != NULL){
+		string violationMSG = CheckViolation(curr);
+
+		//Left-Left
+		if(violationMSG == "LL"){
+			curr = Rotate_cw(curr);
+		}
+		//Right-Right
+		else if(violationMSG == "RR"){
+			curr = Rotate_cc(curr);
+		}
+		//Left-Right
+		else if(violationMSG == "LR"){
+			Rotate_cc(curr->Get_left());
+			curr = Rotate_cw(curr);
+		}
+		//Right-Left
+		else if(violationMSG == "RL"){
+			Rotate_cw(curr->Get_right());
+			curr = Rotate_cc(curr);
+		}
+		else if(violationMSG == "NO"){
+			curr = curr->Get_parent();
+		}
+	}
 
 }
 
@@ -437,12 +459,6 @@ int AVL::Depth(Node* p){
 	return depth;
 }
 
-//Rotate helper
-string AVL::RotateHelper(Node* psParent, int psKey){
-	
-	return "SCREW YOU";
-}
-
 //Rotate CW
 Node* AVL::Rotate_cw(Node* p){
 
@@ -453,43 +469,33 @@ Node* AVL::Rotate_cw(Node* p){
 
 	//Set A's parent to p's parent. Could be a node or NULL
 	A->Set_parent(psParent);
-	cout << "SET A's NEW PARENT" << endl;
 
 	//Set p's left child to D. Could be a node or NULL
 	p->Set_left(D);
-	cout << "SET p's left child to D" << endl;
 
 	//If D is a node and not NULL, set its parent to p
 	if(D != NULL) D->Set_parent(p);
-	cout << "SET D'S PARENT TO P IF D IS NOT NULL" << endl;
 
 	//Set p's parent to A
 	p->Set_parent(A);
-	cout << "SET p's PARENT TO A" << endl;
 
 	//Set A's right to p
 	A->Set_right(p);
-	cout << "SET A's RIGHT TO P" << endl;
 
 	//If A's parent is not NULL, this tree was not rotated at the root
 	if(psParent != NULL){
-		cout << "NOT ROTATED AT ROOT" << endl;
 
 		if(psParent->Get_left() == NULL){
-			cout << "P IS RIGHT CHILD" << endl;
 			A->Get_parent()->Set_right(A);
 		}
 		else if(psParent->Get_right() == NULL){
-			cout << "P IS LEFT CHILD" << endl;
 			A->Get_parent()->Set_left(A);
 		}
 		else{
 			if(psParent->Get_left()->Get_key() == p->Get_key()){
-				cout << "P IS LEFT CHILD" << endl;
 				A->Get_parent()->Set_left(A);
 			}
 			else{
-				cout << "P IS RIGHT CHILD" << endl;
 				A->Get_parent()->Set_right(A);
 			}
 		}
@@ -498,7 +504,6 @@ Node* AVL::Rotate_cw(Node* p){
 	//If A's parent is NULL, A is the new root
 	else{ 
 		root = A;
-		cout << "ROTATED AT ROOT" << endl;
 	}
 
 	return A;
@@ -518,43 +523,33 @@ Node* AVL::Rotate_cc(Node* p){
 
 	//Set B's parent to p's parent. Could be a node or NULL
 	B->Set_parent(psParent);
-	cout << "SET B's NEW PARENT" << endl;
 
 	//Set p's right child to E. Could be a node or NULL
 	p->Set_right(E);
-	cout << "SET p's left child to E" << endl;
 
 	//If E is a node and not NULL, set its parent to p
 	if(E != NULL) E->Set_parent(p);
-	cout << "SET E'S PARENT TO P IF E IS NOT NULL" << endl;
 
 	//Set p's parent to B
 	p->Set_parent(B);
-	cout << "SET p's PARENT TO B" << endl;
 
 	//Set B's left to p
 	B->Set_left(p);
-	cout << "SET B's LEFT TO P" << endl;
 
 	//If B's parent is not NULL, this tree was not rotated at the root
 	if(psParent != NULL){
-		cout << "NOT ROTATED AT ROOT" << endl;
 
 		if(psParent->Get_left() == NULL){
-			cout << "P IS RIGHT CHILD" << endl;
 			B->Get_parent()->Set_right(B);
 		}
 		else if(psParent->Get_right() == NULL){
-			cout << "P IS LEFT CHILD" << endl;
 			B->Get_parent()->Set_left(B);
 		}
 		else{
 			if(psParent->Get_left()->Get_key() == p->Get_key()){
-				cout << "P IS LEFT CHILD" << endl;
 				B->Get_parent()->Set_left(B);
 			}
 			else{
-				cout << "P IS RIGHT CHILD" << endl;
 				B->Get_parent()->Set_right(B);
 			}
 		}
@@ -563,7 +558,6 @@ Node* AVL::Rotate_cc(Node* p){
 	//If B's parent is NULL, A is the new root
 	else{ 
 		root = B;
-		cout << "ROTATED AT ROOT" << endl;
 	}
 
 	return B;
@@ -703,8 +697,8 @@ int main()
 	}
 	// Mode 4: test "Remove_AVL" function 
 	else if (mode_test == 4) {
-		//tree.Remove_AVL(key_search);
-		//tree.PreTraverse();
+		tree.Remove_AVL(key_search);
+		tree.PreTraverse();
 	}
 	// Mode 5: test "Height" function 
 	else if (mode_test == 5) {
